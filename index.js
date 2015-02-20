@@ -163,7 +163,8 @@
         assert.string(token, 'token');
         return new TrustedUser(this, token);
       },
-      enumerable: true
+      enumerable: true,
+      writable: true
     }
 
   });
