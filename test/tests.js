@@ -1,13 +1,13 @@
 module.exports = (function() {
   'use strict';
 
-  var util = require('util'),
-    path = require('path'),
-    fs = require('fs'),
-    expect = require('expect.js'),
-    http = require('http'),
-    signature = require('http-signature'),
-    TrustedClient = require('../');
+  var util = require('util');
+  var path = require('path');
+  var fs = require('fs');
+  var expect = require('expect.js');
+  var http = require('http');
+  var signature = require('http-signature');
+  var trusted = require('../');
 
   function print(it) {
     if (typeof(it) === 'string') {
@@ -57,12 +57,12 @@ module.exports = (function() {
 
     it('can send request', function(done) {
       var uri = 'http://localhost:'.concat(port);
-      var trusted = new TrustedClient({
+      var client = new trusted.TrustedClient({
         keyId: 'test',
         key: privateKey,
         log: log
       });
-      trusted.request(uri, {
+      client.request(uri, {
           method: 'GET'
         },
         function(err, res, body) {
