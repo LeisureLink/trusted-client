@@ -6,6 +6,7 @@ var fs = require('fs');
 var expect = require('expect.js');
 var http = require('http');
 var signature = require('http-signature');
+var errors = require('http-equiv-errors');
 var trusted = require('../');
 
 var format = util.format;
@@ -92,7 +93,7 @@ describe('#success', function() {
           success(expected)
           .error(
       function(err) {
-        expect(err).to.be.an(trusted.UnexpectedResponseError);
+        expect(err).to.be.an(errors.UnexpectedResponseError);
         done();
       })
     );
@@ -114,7 +115,7 @@ describe('#success', function() {
           success(expected)
           .unexpected(
       function(err) {
-        expect(err).to.be.an(trusted.UnexpectedResponseError);
+        expect(err).to.be.an(errors.UnexpectedResponseError);
         done();
       })
     );
@@ -137,7 +138,7 @@ describe('#success', function() {
           .error(done)
           .unexpected(
       function(err) {
-        expect(err).to.be.an(trusted.UnexpectedResponseError);
+        expect(err).to.be.an(errors.UnexpectedResponseError);
         done();
       })
     );

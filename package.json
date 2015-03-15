@@ -24,9 +24,8 @@
   "dependencies": {
     "assert-plus": "^0.1.5",
     "deep-extend": "^0.3.2",
-    "error-base": "git://github.com/LeisureLink/error-base",
     "foldero": "^0.1.1",
-    "http-base-errors": "git://github.com/LeisureLink/http-base-errors",
+    "http-equiv-errors": "git://github.com/LeisureLink/http-equiv-errors",
     "http-signature": "git://github.com/LeisureLink/node-http-signature#b500bf7",
     "jsonwebtoken": "^4.1.0",
     "request": "^2.53.0"
