@@ -22,7 +22,6 @@
     <Compile Include="lib\success.js" />
     <Compile Include="lib\TrustedClient.js" />
     <Compile Include="lib\TrustedUser.js" />
-    <Compile Include="lib\UnexpectedResponseError.js" />
     <Compile Include="test\success-tests.js">
       <TestFramework>Mocha</TestFramework>
     </Compile>
