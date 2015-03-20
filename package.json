@@ -25,18 +25,14 @@
     "assert-plus": "^0.1.5",
     "deep-extend": "^0.3.2",
     "foldero": "^0.1.1",
+    "http-equiv-errors": "git://github.com/LeisureLink/http-equiv-errors",
+    "http-signature": "git://github.com/LeisureLink/node-http-signature#b500bf7",
     "jsonwebtoken": "^4.2.1",
     "request": "^2.53.0"
-  },
-  "peerDependencies": { 
-    "http-equiv-errors": "~0.x.x",
-    "http-signature": "~0.10.x"
   },
   "devDependencies": {
     "blanket": "^1.1.6",
     "expect.js": "^0.3.1",
-    "http-equiv-errors": "git://github.com/LeisureLink/http-equiv-errors",
-    "http-signature": "git://github.com/LeisureLink/node-http-signature#b500bf7",
     "mocha": "^2.0.1"
   },
   "config": {
