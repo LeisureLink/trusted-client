@@ -27,7 +27,7 @@
     "foldero": "^0.1.1",
     "http-equiv-errors": "git://github.com/LeisureLink/http-equiv-errors",
     "http-signature": "git://github.com/LeisureLink/node-http-signature#b500bf7",
-    "jsonwebtoken": "^4.2.1",
+    "jsonwebtoken": "~5.0.0",
     "request": "^2.53.0"
   },
   "devDependencies": {
