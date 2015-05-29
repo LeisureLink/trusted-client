@@ -28,7 +28,7 @@
     "http-equiv-errors": "git://github.com/LeisureLink/http-equiv-errors",
     "http-signature": "git://github.com/LeisureLink/node-http-signature#b500bf7",
     "jsonwebtoken": "~5.0.0",
-    "request": "^2.53.0"
+    "request": "2.55.0"
   },
   "devDependencies": {
     "blanket": "^1.1.6",
