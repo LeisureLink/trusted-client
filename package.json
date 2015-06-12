@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha -R spec",
-    "docs": "jsdoc lib -r -d docs"
+    "docs": "jsdoc2md lib/**/*.js > docs.md"
   },
   "repository": {
     "type": "git",
@@ -39,6 +39,7 @@
   "devDependencies": {
     "blanket": "^1.1.6",
     "expect.js": "^0.3.1",
+    "jsdoc-to-markdown": "^1.1.1",
     "mocha": "^2.0.1"
   },
   "config": {
