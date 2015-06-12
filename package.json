@@ -1,6 +1,6 @@
 {
   "name": "trusted-client",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Nodejs module implementing trusted client over http requests.",
   "main": "index.js",
   "scripts": {
@@ -20,6 +20,10 @@
     {
       "name": "Eli Mumford",
       "email": "elimumford@gmail.com"
+    },
+    {
+      "name": "Tyler Garlick",
+      "email": "tjgarlick@gmail.com"
     }
   ],
   "dependencies": {

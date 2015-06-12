@@ -75,14 +75,25 @@ describe('TrustedClient', function() {
     );
   });
 
-});
+  describe('AbstractClient', function() {
 
-describe('AbstractClient', function() {
+    var uri = 'http://localhost:'.concat(port);
+    var trustedClient = new trusted.TrustedClient({
+      keyId: 'test',
+      key: privateKey,
+      log: log
+    });
 
-  var uri = 'http://localhost:'.concat(port);
-  it('should be able to perform a request on a known route', function() {
-    var client = new AbstractClient();
+    it('should be able to perform a request on a known route', function(done) {
+      var client = new AbstractClient(uri, trustedClient, { root: '/' });
+      client.get('root', function(err, resp) {
+        if (err) return done(err);
+        expect(resp.statusCode).to.be(200);
+        done();
+      });
+    });
+
   });
-
-
 });
+
+
