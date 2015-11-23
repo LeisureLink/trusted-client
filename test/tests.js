@@ -8,6 +8,7 @@ var http = require('http');
 var signature = require('http-signature');
 var trusted = require('../');
 var AbstractClient = require('../lib/AbstractClient');
+var domainCorrelation = require('@leisurelink/domain-correlation');
 
 function print(it) {
   if (typeof (it) === 'string') {
@@ -32,6 +33,7 @@ var privateKey = fs.readFileSync(privateKeyFile);
 var publicKeyFile = path.normalize(process.env.HTTP_SIGNATURE_PUB || path.join(__dirname, './test-key.pub'));
 var publicKey = fs.readFileSync(publicKeyFile);
 
+var relayCorrelationIdHeaderName = 'x-received-correlation-id';
 describe('TrustedClient', function() {
   var server;
 
@@ -40,6 +42,10 @@ describe('TrustedClient', function() {
 
       try {
         res.setHeader('Content-Type', 'text/plain');
+        var correlationId = req.headers['x-correlation-id'];
+        if (correlationId) {
+          res.setHeader(relayCorrelationIdHeaderName, correlationId);
+        }
         res.writeHead(200);
         res.end('hello goodbye');
       } catch (Exception) {
@@ -70,9 +76,34 @@ describe('TrustedClient', function() {
           return done(err);
         }
         expect(res.statusCode).to.be(200);
+        expect(res.headers[relayCorrelationIdHeaderName]).to.be(undefined);
         done();
       }
     );
+  });
+
+ it('sends a correlation id', function(done) {
+    domainCorrelation.domainContext.run(function() {
+      var correlationId = domainCorrelation.getId();
+      var uri = 'http://localhost:'.concat(port);
+      var client = new trusted.TrustedClient({
+        keyId: 'test',
+        key: privateKey,
+        log: log
+      });
+      client.request(uri, {
+          method: 'GET'
+        },
+        function(err, res, body) {
+          if (err) {
+            return done(err);
+          }
+          expect(res.statusCode).to.be(200);
+          expect(res.headers[relayCorrelationIdHeaderName]).to.be(correlationId);
+          done();
+        }
+      );
+    });
   });
 
   describe('AbstractClient', function() {
