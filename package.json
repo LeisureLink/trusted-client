@@ -1,6 +1,6 @@
 {
-  "name": "trusted-client",
-  "version": "0.3.0",
+  "name": "@leisurelink/trusted-client",
+  "version": "0.3.1",
   "description": "Nodejs module implementing trusted client over http requests.",
   "main": "index.js",
   "scripts": {
@@ -27,12 +27,12 @@
     }
   ],
   "dependencies": {
+    "@leisurelink/domain-correlation": "^1.0",
+    "@leisurelink/http-equiv-errors": "^0.1.4",
+    "@leisurelink/http-signature": "^0.11.0",
     "assert-plus": "^0.1.5",
     "deep-extend": "^0.3.2",
-    "@leisurelink/domain-correlation": "^1.0",
     "foldero": "^0.1.1",
-    "http-equiv-errors": "git://github.com/LeisureLink/http-equiv-errors",
-    "http-signature": "git://github.com/LeisureLink/node-http-signature#b500bf7",
     "jsonwebtoken": "~5.0.0",
     "request": "2.55.0",
     "uri-template": "^1.0.0"
