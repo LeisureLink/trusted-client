@@ -5,8 +5,8 @@ var path = require('path');
 var fs = require('fs');
 var expect = require('expect.js');
 var http = require('http');
-var signature = require('http-signature');
-var errors = require('http-equiv-errors');
+var signature = require('@leisurelink/http-signature');
+var errors = require('@leisurelink/http-equiv-errors');
 var trusted = require('../');
 
 var format = util.format;

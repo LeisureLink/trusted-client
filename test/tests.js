@@ -5,7 +5,7 @@ var path = require('path');
 var fs = require('fs');
 var expect = require('expect.js');
 var http = require('http');
-var signature = require('http-signature');
+var signature = require('@leisurelink/http-signature');
 var trusted = require('../');
 var AbstractClient = require('../lib/AbstractClient');
 var domainCorrelation = require('@leisurelink/domain-correlation');
@@ -126,5 +126,3 @@ describe('TrustedClient', function() {
 
   });
 });
-
-
