@@ -46,6 +46,14 @@ describe('TrustedClient', function() {
         if (correlationId) {
           res.setHeader(relayCorrelationIdHeaderName, correlationId);
         }
+        var parsed = null;
+        try {
+          parsed = signature.parseRequest(req)
+        }
+        catch (e) {
+          console.log('Couldnt parse http signature');
+        }
+        res.setHeader('x-parsed-signature', JSON.stringify(parsed));
         res.writeHead(200);
         res.end('hello goodbye');
       } catch (Exception) {
@@ -77,6 +85,55 @@ describe('TrustedClient', function() {
         }
         expect(res.statusCode).to.be(200);
         expect(res.headers[relayCorrelationIdHeaderName]).to.be(undefined);
+        done();
+      }
+    );
+  });
+
+ it('signs request', function(done) {
+    var uri = 'http://localhost:'.concat(port);
+    var client = new trusted.TrustedClient({
+      keyId: 'test',
+      key: privateKey,
+      log: log
+    });
+    client.request(uri, {
+        method: 'GET'
+      },
+      function(err, res, body) {
+        if (err) {
+          return done(err);
+        }
+        expect(res.statusCode).to.be(200);
+
+        var signature = JSON.parse(res.headers['x-parsed-signature']);
+
+        expect(signature.params.keyId).to.eql('test');
+        done();
+      }
+    );
+  });
+
+ it('signs request with jwt', function(done) {
+    var uri = 'http://localhost:'.concat(port);
+    var client = new trusted.TrustedClient({
+      keyId: 'test',
+      key: privateKey,
+      log: log
+    });
+    client = client.bindToken('some-jwt-token');
+    client.request(uri, {
+        method: 'GET'
+      },
+      function(err, res, body) {
+        if (err) {
+          return done(err);
+        }
+        expect(res.statusCode).to.be(200);
+
+        var signature = JSON.parse(res.headers['x-parsed-signature']);
+
+        expect(signature.params.jwt).to.eql('some-jwt-token');
         done();
       }
     );
