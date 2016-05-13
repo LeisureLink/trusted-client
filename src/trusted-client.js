@@ -161,7 +161,7 @@ export default function TrustedClient(options) {
       key: key,
       headers: signedHeaders[options.method]
     };
-    if (options.json) {
+    if (options.json && options.json !== true) {
       options.body = JSON.stringify(options.json);
       delete options.json;
       setRequestHeader(options, 'content-type', 'application/json');
