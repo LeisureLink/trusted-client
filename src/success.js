@@ -20,7 +20,7 @@ const formatUnexpectedResponseErrorMessage = (res, body) => {
 
 export default function success(expected) {
   let behaviors = {};
-  let fn = (err, res, body) => {
+  let fn = (err, res, body) => { // eslint-disable-line
     if (err) {
       if (behaviors.onErr) {
         behaviors.onErr(err);

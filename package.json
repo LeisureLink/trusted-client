@@ -11,7 +11,7 @@
     "lint": "esw --quiet",
     "lint:watch": "esw --quiet --watch",
     "prepublish": "npm run clean; npm run build",
-    "coverage": "NODE_ENV=${NODE_ENV:-local} istanbul cover _mocha -- tests --recursive --compilers js:babel-core/register",
+    "coverage": "NODE_ENV=${NODE_ENV:-local} node_modules/.bin/babel-node node_modules/.bin/babel-istanbul cover node_modules/.bin/_mocha -- tests --recursive",
     "ci": "npm run lint && npm run coverage"
   },
   "repository": {
@@ -31,6 +31,10 @@
     {
       "name": "Tyler Garlick",
       "email": "tjgarlick@gmail.com"
+    },
+    {
+      "name": "Jesse Hansen",
+      "email": "twindagger@gmail.com"
     }
   ],
   "dependencies": {
@@ -42,13 +46,16 @@
     "bluebird": "^3.3.5",
     "deep-extend": "^0.4.1",
     "jsonwebtoken": "~6.2.0",
+    "lodash": "^4.12.0",
     "request": "2.72.0",
     "uri-template": "^1.0.0"
   },
   "devDependencies": {
+    "@leisurelink/skinny-loggins": "^1.2.0",
     "babel-cli": "^6.5.1",
     "babel-core": "^6.8.0",
     "babel-eslint": "^6.0.4",
+    "babel-istanbul": "^0.8.0",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-es2015-destructuring": "^6.5.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.5.2",
@@ -59,6 +66,7 @@
     "eslint": "^2.9.0",
     "eslint-config-leisurelink": "^1.0.2",
     "eslint-watch": "^2.1.8",
+    "jwt-simple": "^0.5.0",
     "mocha": "^2.4.5"
   }
 }

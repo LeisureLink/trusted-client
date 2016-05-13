@@ -6,7 +6,7 @@ import errors from '@leisurelink/http-equiv-errors';
 import { EventEmitter } from 'events';
 import domainCorrelation from '@leisurelink/domain-correlation';
 import TrustedUser from './trusted-user';
-import Logger from '@leisurelink/skinny-event-loggins';
+import defaultLogger from './logger';
 import DeferredPromise from './deferred-promise';
 
 export const DefaultSignedHeaders = {
@@ -60,7 +60,7 @@ export default function TrustedClient(options) {
   let key = options.key;
   let signedHeaders = options.signedHeaders || DefaultSignedHeaders;
   let eventSink = new EventEmitter();
-  const logger = options.log || Logger('trusted-client', eventSink);
+  const logger = options.log || defaultLogger;
 
   const handleResponse = (deferred) => {
     return (err, res, body) => {
@@ -86,7 +86,7 @@ export default function TrustedClient(options) {
 
   const handleResponseWithMetrics = (uri, options, callback, deferred) => {
     const hrstart = process.hrtime();
-    return (err, res, body) => {
+    return (err, res, body) => { // eslint-disable-line
       const hrend = process.hrtime(hrstart);
       const evt = {
         hrtime: hrend,
@@ -138,8 +138,7 @@ export default function TrustedClient(options) {
     };
   };
 
-  let module = {};
-  module.request = (uri, options, callback) => {
+  const makeRequest = (uri, options, callback) => { // eslint-disable-line
     assert.string(uri, 'uri');
     assert.object(options, 'options');
     assert.string(options.method, 'options.method');
@@ -193,24 +192,26 @@ export default function TrustedClient(options) {
     return deferred.promise;
   };
 
-  module.withToken = (token) => {
+  const withToken = (token) => {
     assert.string(token, 'token');
-    return TrustedUser(module.request, token);
-  };
-  module.on = (event, handler) => {
-    eventSink.on(event, handler);
-  };
-  module.once = (event, handler) => {
-    eventSink.once(event, handler);
+    return TrustedUser(makeRequest, token);
   };
 
-  // deprecated
-  module.bindToken = module.withToken;
+  let module = {
+    request: makeRequest,
+    bindToken: withToken,
+    withToken,
+    on: (event, handler) => {
+      eventSink.on(event, handler);
+    },
+    once: (event, handler) => {
+      eventSink.once(event, handler);
+    }
+  };
 
   // deprecated
   if (this) {
-    this.request = module.request;
-    this.bindToken = module.bindToken;
+    logger.warn('Deprecated - trusted client should not be called with "new"');
   }
 
   return module;

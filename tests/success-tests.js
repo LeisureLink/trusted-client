@@ -1,24 +1,9 @@
-'use strict';
-
 var util = require('util');
-var path = require('path');
-var fs = require('fs');
 var expect = require('chai').expect;
-var http = require('http');
-var signature = require('@leisurelink/http-signature');
 var errors = require('@leisurelink/http-equiv-errors');
 var trusted = require('../');
 
 var format = util.format;
-var success = trusted.success;
-
-function print(it) {
-  if (typeof (it) === 'string') {
-    util.log(it);
-  } else {
-    util.log(util.inspect(it, false, 9));
-  }
-}
 
 function mockHttpCall(err, statusCode, callback) {
   process.nextTick(function mockHttpResponse() {
@@ -38,6 +23,7 @@ function mockHttpCall(err, statusCode, callback) {
 }
 
 describe('#success', function() {
+  var success = trusted.success;
 
   it('expecting 200 receives 200 - succeeds',
   function(done) {
