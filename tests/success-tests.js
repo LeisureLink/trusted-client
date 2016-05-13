@@ -3,7 +3,7 @@
 var util = require('util');
 var path = require('path');
 var fs = require('fs');
-var expect = require('expect.js');
+var expect = require('chai').expect;
 var http = require('http');
 var signature = require('@leisurelink/http-signature');
 var errors = require('@leisurelink/http-equiv-errors');
@@ -21,9 +21,12 @@ function print(it) {
 }
 
 function mockHttpCall(err, statusCode, callback) {
-  process.nextTick(function mochHttpResponse() {
-    if (err) return callback(err);
-    var body;
+  process.nextTick(function mockHttpResponse() {
+    if (err) {
+      callback(err);
+      return;
+    }
+    let body;
     if (statusCode !== 204) {
       body = format('response: %s', statusCode);
     }
@@ -37,33 +40,31 @@ function mockHttpCall(err, statusCode, callback) {
 describe('#success', function() {
 
   it('expecting 200 receives 200 - succeeds',
-      function(done) {
+  function(done) {
     var expected = {
       200: function(res, body) {
         try {
-          expect(res.statusCode).to.be(200);
-          expect(body).to.be('response: 200');
+          expect(res.statusCode).to.equal(200);
+          expect(body).to.equal('response: 200');
           done();
         } catch (err) {
           done(err);
         }
       }
     };
-    mockHttpCall(null, 200,
-          success(expected)
-    );
+    mockHttpCall(null, 200, success(expected));
   });
 
   it('expecting 200, 201 receives 201 - succeeds',
-      function(done) {
+  function(done) {
     var expected = {
-      200: function(res, body) {
+      200: function() {
         done(new Error('not expected'));
       },
       201: function(res, body) {
         try {
-          expect(res.statusCode).to.be(201);
-          expect(body).to.be('response: 201');
+          expect(res.statusCode).to.equal(201);
+          expect(body).to.equal('response: 201');
           done();
         } catch (err) {
           done(err);
@@ -77,12 +78,12 @@ describe('#success', function() {
   });
 
   it('expecting 201 with error handler, receives 500; error handler receives UnexpectedResponseError',
-      function(done) {
+  function(done) {
     var expected = {
       201: function(res, body) {
         try {
-          expect(res.statusCode).to.be(201);
-          expect(body).to.be('response: 201');
+          expect(res.statusCode).to.equal(201);
+          expect(body).to.equal('response: 201');
           done();
         } catch (err) {
           done(err);
@@ -93,18 +94,18 @@ describe('#success', function() {
           success(expected)
           .error(
       function(err) {
-        expect(err).to.be.an(errors.UnexpectedResponseError);
+        expect(err).to.be.an.instanceof(errors.UnexpectedResponseError);
         done();
       })
     );
   });
 
   it('expecting 204 with unexpected handler, receives 400; unexpected handler receives UnexpectedResponseError',
-      function(done) {
+  function(done) {
     var expected = {
-      204: function(res, body) {
+      204: function(res) {
         try {
-          expect(res.statusCode).to.be(204);
+          expect(res.statusCode).to.equal(204);
           done();
         } catch (err) {
           done(err);
@@ -115,18 +116,18 @@ describe('#success', function() {
           success(expected)
           .unexpected(
       function(err) {
-        expect(err).to.be.an(errors.UnexpectedResponseError);
+        expect(err).to.be.an.instanceof(errors.UnexpectedResponseError);
         done();
       })
     );
   });
 
   it('expecting 204 with unexpected handler and error handler, receives 400; unexpected handler receives UnexpectedResponseError',
-      function(done) {
+  function(done) {
     var expected = {
-      204: function(res, body) {
+      204: function(res) {
         try {
-          expect(res.statusCode).to.be(204);
+          expect(res.statusCode).to.equal(204);
           done();
         } catch (err) {
           done(err);
@@ -134,13 +135,11 @@ describe('#success', function() {
       }
     };
     mockHttpCall(null, 400,
-          success(expected)
+      success(expected)
           .error(done)
-          .unexpected(
-      function(err) {
-        expect(err).to.be.an(errors.UnexpectedResponseError);
-        done();
-      })
-    );
+          .unexpected(function(err) {
+            expect(err).to.be.an.instanceof(errors.UnexpectedResponseError);
+            done();
+          }));
   });
 });

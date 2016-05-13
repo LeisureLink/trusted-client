@@ -1,0 +1,11 @@
+{
+  "env": {
+    "mocha": true
+  },
+  globals:{
+    sinon: false,
+    expect: true,
+    serverUrl: true,
+    createServer: true
+  }
+}

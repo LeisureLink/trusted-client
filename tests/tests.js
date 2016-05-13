@@ -3,11 +3,11 @@
 var util = require('util');
 var path = require('path');
 var fs = require('fs');
-var expect = require('expect.js');
+var expect = require('chai').expect;
 var http = require('http');
 var signature = require('@leisurelink/http-signature');
-var trusted = require('../');
-var AbstractClient = require('../lib/AbstractClient');
+var trusted = require('../src');
+var AbstractClient = trusted.AbstractClient;
 var domainCorrelation = require('@leisurelink/domain-correlation');
 
 function print(it) {
@@ -83,8 +83,8 @@ describe('TrustedClient', function() {
         if (err) {
           return done(err);
         }
-        expect(res.statusCode).to.be(200);
-        expect(res.headers[relayCorrelationIdHeaderName]).to.be(undefined);
+        expect(res.statusCode).to.equal(200);
+        expect(res.headers[relayCorrelationIdHeaderName]).to.equal(undefined);
         done();
       }
     );
@@ -104,7 +104,7 @@ describe('TrustedClient', function() {
         if (err) {
           return done(err);
         }
-        expect(res.statusCode).to.be(200);
+        expect(res.statusCode).to.equal(200);
 
         var signature = JSON.parse(res.headers['x-parsed-signature']);
 
@@ -129,7 +129,7 @@ describe('TrustedClient', function() {
         if (err) {
           return done(err);
         }
-        expect(res.statusCode).to.be(200);
+        expect(res.statusCode).to.equal(200);
 
         var signature = JSON.parse(res.headers['x-parsed-signature']);
 
@@ -155,8 +155,8 @@ describe('TrustedClient', function() {
           if (err) {
             return done(err);
           }
-          expect(res.statusCode).to.be(200);
-          expect(res.headers[relayCorrelationIdHeaderName]).to.be(correlationId);
+          expect(res.statusCode).to.equal(200);
+          expect(res.headers[relayCorrelationIdHeaderName]).to.equal(correlationId);
           done();
         }
       );
@@ -176,7 +176,7 @@ describe('TrustedClient', function() {
       var client = new AbstractClient(uri, trustedClient, { root: '/' });
       client.get('root', function(err, resp) {
         if (err) return done(err);
-        expect(resp.statusCode).to.be(200);
+        expect(resp.statusCode).to.equal(200);
         done();
       });
     });

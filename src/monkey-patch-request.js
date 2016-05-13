@@ -4,7 +4,7 @@ var request = require('request');
 var httpSignature = require('@leisurelink/http-signature');
 
 request.Request.prototype.httpSignature = function (opts) {
-  var self = this
+  var self = this;
   httpSignature.signRequest({
     getHeader: function(header) {
       return self.getHeader(header, self.headers)
@@ -16,7 +16,7 @@ request.Request.prototype.httpSignature = function (opts) {
     path: self.path
   }, opts);
 
-  return self
+  return self;
 }
 
 module.exports = request;
