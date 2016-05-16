@@ -5,3 +5,5 @@ src
 .gitignore
 .npmignore
 tests
+circle.yml
+coverage
