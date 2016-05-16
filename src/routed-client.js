@@ -1,4 +1,4 @@
-import assert from 'assert-plus';
+import { routedClient as routedClientSchema, validate, requiredAny, requiredObject, optionalObject, requiredString, requiredFunc, optionalFunc } from './schemas';
 import uriTemplate from 'uri-template';
 import _ from 'lodash';
 
@@ -11,10 +11,9 @@ const createUriTemplates = (base, routeDefinitions) => {
 };
 
 export default function RoutedClient(baseUrl, trustedClient, routeDefinitions){
-  assert.string(baseUrl, 'baseUrl');
-  assert.object(trustedClient, 'trustedClient');
-  assert.func(trustedClient.request, 'trustedClient.request');
-  assert.object(routeDefinitions, 'routeDefinitions');
+  validate(baseUrl, requiredString('baseUrl'));
+  validate(trustedClient, requiredObject('trustedClient', { request: requiredFunc('request') }).unknown(true));
+  validate(routeDefinitions, routedClientSchema.routeDefinitions);
 
   let base = baseUrl.replace(/\/$/, '');
   let routes = createUriTemplates(base, routeDefinitions);
@@ -26,21 +25,21 @@ export default function RoutedClient(baseUrl, trustedClient, routeDefinitions){
     return _.defaults({}, { method: method.toUpperCase() }, options);
   };
   const requestWithoutBody = (method, routeName, params, options, callback) => {
-    assert.string(method, 'method');
-    assert.string(routeName, 'routeName');
-    assert.optionalObject(params, 'params');
-    assert.optionalObject(options, 'options');
-    assert.optionalFunc(callback, 'callback');
+    validate(method, requiredString('method'));
+    validate(routeName, requiredString('routeName'));
+    validate(params, optionalObject('params'));
+    validate(options, optionalObject('options'));
+    validate(callback, optionalFunc('callback'));
 
     return trustedClient.request(getUrl(routeName, params), getOptions(method, options), callback);
   };
   const requestWithBody = (method, routeName, params, body, options, callback) => {
-    assert.string(method, 'method');
-    assert.string(routeName, 'routeName');
-    assert.object(params, 'params');
-    assert.object(body, 'body');
-    assert.optionalObject(options, 'options');
-    assert.optionalFunc(callback, 'callback');
+    validate(method, requiredString('method'));
+    validate(routeName, requiredString('routeName'));
+    validate(params, optionalObject('params'));
+    validate(body, requiredAny('body'));
+    validate(options, optionalObject('options'));
+    validate(callback, optionalFunc('callback'));
 
     let requestOptions = getOptions(method, options);
     requestOptions.json = body;

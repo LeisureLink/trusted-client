@@ -1,9 +1,8 @@
 import { format } from 'util';
 import extend from 'deep-extend';
-import joi from 'joi';
 import request from './monkey-patch-request';
 import errors from '@leisurelink/http-equiv-errors';
-import { trustedClient as trustedClientSchema, validate } from './schemas';
+import { trustedClient as trustedClientSchema, validate, requiredObject, requiredString, optionalFunc } from './schemas';
 import { EventEmitter } from 'events';
 import domainCorrelation from '@leisurelink/domain-correlation';
 import TrustedUser from './trusted-user';
@@ -30,8 +29,8 @@ function forceJson(headers, body) {
 }
 
 function setRequestHeader(options, header, value) {
-  validate(options, joi.object().description('options'));
-  validate(header, joi.string().description('header'));
+  validate(options, requiredObject('options'));
+  validate(header, requiredString('header'));
   options.headers = options.headers || {};
   options.headers[header] = value;
 }
@@ -135,9 +134,9 @@ export default function TrustedClient(options) {
   };
 
   const makeRequest = (uri, options, callback) => { // eslint-disable-line
-    validate(uri, joi.string().description('uri'));
-    validate(options, joi.object().description('options'));
-    validate(callback, joi.func().optional());
+    validate(uri, requiredString('uri'));
+    validate(options, requiredObject('options'));
+    validate(callback, optionalFunc('callback'));
 
     options.uri = uri;
 
@@ -189,7 +188,7 @@ export default function TrustedClient(options) {
   };
 
   const withToken = (token) => {
-    validate(token, joi.string().description('token'));
+    validate(token, requiredString('token'));
     return TrustedUser(makeRequest, token);
   };
 

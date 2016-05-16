@@ -29,6 +29,23 @@ describe('RoutedClient', function() {
     server.close();
   });
 
+  describe('argument checking', function(){
+    it('should require a baseUrl', function(){
+      expect(()=>RoutedClient()).to.throw();
+    });
+    it('should require a trusted client', function(){
+      expect(()=>RoutedClient(uri)).to.throw();
+    });
+    it('should require route definitions', function(){
+      expect(()=>RoutedClient(uri, trustedClient)).to.throw();
+      expect(()=>RoutedClient(uri, trustedClient, {})).to.throw();
+      expect(()=>RoutedClient(uri, trustedClient, { 'bob': false })).to.throw();
+    });
+    it('should work when valid params are given', function(){
+      expect(()=>RoutedClient(uri, trustedClient, routeDefinitions)).to.not.throw();
+    });
+  });
+
   describe('deprecated functionality', function(){
     it('should be constructable', function(){
       let client = new AbstractClient(uri, trustedClient, routeDefinitions);
