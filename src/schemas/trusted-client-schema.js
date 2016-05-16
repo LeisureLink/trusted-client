@@ -18,7 +18,6 @@ export default joi.object({
     })
     .unknown(true)
     .description('Optional logger implementation')
-    .optional()
 })
 .required()
 .label('trusted-client');

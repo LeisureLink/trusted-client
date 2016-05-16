@@ -16,9 +16,9 @@ export default {
   routedClient,
   requiredAny: name => joi.any().description(name).required(),
   requiredString: name => joi.string().description(name).required(),
-  optionalString: name => joi.string().description(name).optional(),
+  optionalString: name => joi.string().description(name),
   requiredObject: (name, keys) => joi.object(keys).description(name).required(),
-  optionalObject: (name, keys) => joi.object(keys).description(name).optional(),
+  optionalObject: (name, keys) => joi.object(keys).description(name),
   requiredFunc: name => joi.func().description(name).required(),
-  optionalFunc: name => joi.func().description(name).optional()
+  optionalFunc: name => joi.func().description(name)
 };
