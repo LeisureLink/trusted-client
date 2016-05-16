@@ -1,0 +1,14 @@
+machine:
+  timezone:
+    America/Denver
+  node:
+    version: 4
+test:
+  override:
+    - npm run ci
+deployment:
+  release:
+    tag: /v.*/
+    owner: LeisureLink
+    commands:
+      - npm publish

@@ -1,7 +1,7 @@
 var util = require('util');
 var expect = require('chai').expect;
 var errors = require('@leisurelink/http-equiv-errors');
-var trusted = require('../');
+var trusted = require('../src');
 
 var format = util.format;
 
