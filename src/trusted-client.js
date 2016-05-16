@@ -1,8 +1,8 @@
 import { format } from 'util';
 import extend from 'deep-extend';
-import assert from 'assert-plus';
 import request from './monkey-patch-request';
 import errors from '@leisurelink/http-equiv-errors';
+import { trustedClient as trustedClientSchema, validate, requiredObject, requiredString, optionalFunc } from './schemas';
 import { EventEmitter } from 'events';
 import domainCorrelation from '@leisurelink/domain-correlation';
 import TrustedUser from './trusted-user';
@@ -29,8 +29,8 @@ function forceJson(headers, body) {
 }
 
 function setRequestHeader(options, header, value) {
-  assert.object(options, 'options');
-  assert.string(header, 'header');
+  validate(options, requiredObject('options'));
+  validate(header, requiredString('header'));
   options.headers = options.headers || {};
   options.headers[header] = value;
 }
@@ -49,12 +49,7 @@ function setRequestHeader(options, header, value) {
  *  @param message
  */
 export default function TrustedClient(options) {
-  assert.object(options, 'options');
-  assert.string(options.keyId, 'options.keyId');
-  if (!Buffer.isBuffer(options.key)) {
-    assert.string(options.key, 'options.key');
-  }
-  assert.optionalObject(options.log, 'options.log');
+  validate(options, trustedClientSchema);
 
   let keyId = options.keyId;
   let key = options.key;
@@ -139,9 +134,9 @@ export default function TrustedClient(options) {
   };
 
   const makeRequest = (uri, options, callback) => { // eslint-disable-line
-    assert.string(uri, 'uri');
-    assert.object(options, 'options');
-    assert.string(options.method, 'options.method');
+    validate(uri, requiredString('uri'));
+    validate(options, requiredObject('options'));
+    validate(callback, optionalFunc('callback'));
 
     options.uri = uri;
 
@@ -193,7 +188,7 @@ export default function TrustedClient(options) {
   };
 
   const withToken = (token) => {
-    assert.string(token, 'token');
+    validate(token, requiredString('token'));
     return TrustedUser(makeRequest, token);
   };
 

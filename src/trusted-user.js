@@ -1,12 +1,12 @@
-import assert from 'assert-plus';
+import { validate, requiredFunc, requiredString, requiredObject } from './schemas';
 
 export default function TrustedUser(request, token) {
-  assert.func(request, 'request');
-  assert.string(token, 'token');
+  validate(request, requiredFunc('request'));
+  validate(token, requiredString('token'));
 
   return {
     request: (uri, options, callback) => {
-      assert.object(options, 'options');
+      validate(options, requiredObject('options'));
       options.jwt = token;
       return request(uri, options, callback);
     }

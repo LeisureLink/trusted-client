@@ -25,6 +25,24 @@ describe('TrustedClient', function() {
     server.close();
   });
 
+  describe('argument checking', function(){
+    it('should require a keyId', function(){
+      expect(()=>TrustedClient({ key: privateKey })).to.throw();
+    });
+    it('should require a key', function(){
+      expect(()=>TrustedClient({ keyId: 'test' })).to.throw();
+    });
+    it('should require a good logger', function(){
+      expect(()=>TrustedClient({ keyId: 'test', key: privateKey, log: { } })).to.throw();
+    });
+    it('should work when valid options are given', function(){
+      expect(()=>TrustedClient({ keyId: 'test', key: privateKey })).to.not.throw();
+    });
+    it('should work when valid logger is given', function(){
+      expect(()=>TrustedClient({ keyId: 'test', key: privateKey, log: require('@leisurelink/skinny-event-loggins')() })).to.not.throw();
+    });
+  });
+
   describe('deprecated functionality', function() {
     let client;
     before(function(){
