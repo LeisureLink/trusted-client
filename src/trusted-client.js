@@ -118,7 +118,7 @@ export default function TrustedClient(options) {
         if (callback) {
           return callback(formatError(error));
         }
-        return deferred.reject(formatError(err));
+        return deferred.reject(formatError(error));
       }
       eventSink.emit('time', evt);
       logger.debug(evt);

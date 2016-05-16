@@ -13,7 +13,7 @@ const createUriTemplates = (base, routeDefinitions) => {
 
 export default function RoutedClient(baseUrl, trustedClient, routeDefinitions){
   validate(baseUrl, requiredString('baseUrl'));
-  validate(trustedClient, requiredObject('trustedClient', { request: requiredFunc('request'), withToken: requiredFunc('withToken') }).unknown(true));
+  validate(trustedClient, requiredObject('trustedClient', { request: requiredFunc('request'), withToken: optionalFunc('withToken') }).unknown(true));
   validate(routeDefinitions, routedClientSchema.routeDefinitions);
 
   let base = baseUrl.replace(/\/$/, '');
