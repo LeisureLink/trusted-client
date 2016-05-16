@@ -1,6 +1,6 @@
 {
   "name": "@leisurelink/trusted-client",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Nodejs module implementing trusted client over http requests.",
   "main": "build/index.js",
   "scripts": {
@@ -37,7 +37,9 @@
       "email": "twindagger@gmail.com"
     }
   ],
-  "engines" : { "node" : ">=4.0.0" },
+  "engines": {
+    "node": ">=4.0.0"
+  },
   "dependencies": {
     "@leisurelink/domain-correlation": "^1.1",
     "@leisurelink/http-equiv-errors": "^0.1.5",
