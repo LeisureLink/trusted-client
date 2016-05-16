@@ -1,10 +1,10 @@
-'use strict';
+import errors from '@leisurelink/http-equiv-errors';
+import util from 'util';
 
-var errors = require('@leisurelink/http-equiv-errors');
-var util = require('util');
+// deprecated
 
-function formatUnexpectedResponseErrorMessage(res, body) {
-  var message = "The server sent an unexptected response";
+const formatUnexpectedResponseErrorMessage = (res, body) => {
+  var message = 'The server sent an unexptected response';
   if (res && res.statusCode) {
     message = message.concat(': ', res.statusCode);
   }
@@ -16,11 +16,11 @@ function formatUnexpectedResponseErrorMessage(res, body) {
     }
   }
   return message + '.';
-}
+};
 
-module.exports = function success(expected) {
-  var behaviors = {};
-  var fn = function(err, res, body) {
+export default function success(expected) {
+  let behaviors = {};
+  let fn = (err, res, body) => { // eslint-disable-line
     if (err) {
       if (behaviors.onErr) {
         behaviors.onErr(err);
@@ -28,14 +28,14 @@ module.exports = function success(expected) {
       }
       throw err;
     }
-    var code = res.statusCode;
+    let code = res.statusCode;
     if (typeof(expected[code]) === 'function') {
       expected[code](res, body);
       return;
     }
-    var msg = formatUnexpectedResponseErrorMessage(res, body);
-    var unexpected = new errors.UnexpectedResponseError(msg, errors.reviveRemoteError(body));
-    var otherwise = behaviors.onUnexpected || behaviors.onErr;
+    let msg = formatUnexpectedResponseErrorMessage(res, body);
+    let unexpected = new errors.UnexpectedResponseError(msg, errors.reviveRemoteError(body));
+    let otherwise = behaviors.onUnexpected || behaviors.onErr;
     if (otherwise) {
       otherwise(unexpected);
       return;

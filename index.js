@@ -1,1 +1,0 @@
-module.exports = require('foldero')('./lib', { relative: __dirname });
