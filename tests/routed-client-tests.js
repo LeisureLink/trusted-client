@@ -10,7 +10,7 @@ const privateKey = readFileSync(privateKeyFile);
 const routeDefinitions = {
   root: '/',
   oneParam: '/prefix/{param1}',
-  twoParams: '/prefix/{param1}/{param2}'
+  twoParams: 'prefix/{param1}/{param2}'
 };
 
 describe('RoutedClient', function() {

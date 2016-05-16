@@ -5,7 +5,8 @@ import _ from 'lodash';
 const createUriTemplates = (base, routeDefinitions) => {
   let routes = {};
   _.forEach(routeDefinitions, (value, key) => {
-    routes[key] = uriTemplate.parse(base + value);
+    let absolutePath = '/' + value.replace(/^\//, '');
+    routes[key] = uriTemplate.parse(base + absolutePath);
   });
   return routes;
 };
