@@ -37,6 +37,7 @@
       "email": "twindagger@gmail.com"
     }
   ],
+  "engines" : { "node" : ">=4.0.0" },
   "dependencies": {
     "@leisurelink/domain-correlation": "^1.1",
     "@leisurelink/http-equiv-errors": "^0.1.5",
