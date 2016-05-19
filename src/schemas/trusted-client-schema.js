@@ -9,6 +9,10 @@ export default joi.object({
     .description('The private key for the api. This is for signing requests.')
     .example('-----BEGIN RSA PRIVATE KEY-----\naabbcc\n-----END RSA PRIVATE KEY-----\n')
     .required(),
+  errorStatus: joi.number().integer().min(100).max(599)
+    .description('Status codes equal to or above this value will result in an error')
+    .example(400)
+    .optional(),
   log: joi.object()
     .keys({
       error: joi.func().required(),
