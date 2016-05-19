@@ -1,7 +1,6 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 import { expect } from 'chai';
-import { fail } from 'assert';
 import createServer, { uri, defaultResponse } from './echo-server';
 import { TrustedClient } from '../src';
 import domainCorrelation from '@leisurelink/domain-correlation';
@@ -163,7 +162,7 @@ describe('TrustedClient', function() {
     it('returns error when statusCode is above request errorStatus', function() {
       return client.request(uri, { method: 'GET', errorStatus: 300, headers: { 'x-expected-status-code': 300 } })
         .then(() => {
-          fail('Expected error, got success');
+          expect.fail('Expected error, got success');
         })
         .catch((err) => {
           expect(err.statusCode).to.equal(300);
