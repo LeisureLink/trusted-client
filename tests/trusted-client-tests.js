@@ -141,13 +141,15 @@ describe('TrustedClient', function() {
         key: privateKey,
         errorStatus: 300
       });
+      let failed = false;
       return client.request(uri, { method: 'GET', headers: { 'x-expected-status-code': 300 } })
-        .then(() => {
-          fail('Expected error, got success');
-        })
         .catch((err) => {
           expect(err.statusCode).to.equal(300);
           expect(err.body).to.deep.equal(defaultResponse);
+          failed = true;
+        })
+        .then(() => {
+          expect(failed).to.equal(true);
         });
     });
 
@@ -160,13 +162,15 @@ describe('TrustedClient', function() {
     });
 
     it('returns error when statusCode is above request errorStatus', function() {
+      let failed = false;
       return client.request(uri, { method: 'GET', errorStatus: 300, headers: { 'x-expected-status-code': 300 } })
-        .then(() => {
-          expect.fail('Expected error, got success');
-        })
         .catch((err) => {
           expect(err.statusCode).to.equal(300);
           expect(err.body).to.deep.equal(defaultResponse);
+        })
+        .then(() => {
+          failed = true;
+          expect(failed).to.equal(true);
         });
     });
 
