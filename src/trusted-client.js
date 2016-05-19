@@ -119,7 +119,7 @@ export default function TrustedClient(options) {
 
       let minStatusForError = options.errorStatus || errorStatus;
       // if the response is an error and json, revive the error to its object type...
-      if (typeof (body) === 'object' && res.statusCode > 299 && body.statusCode && res.statusCode == body.statusCode) { //eslint-disable-line
+      if (typeof (body) === 'object' && res.statusCode >= 400 && body.statusCode && res.statusCode == body.statusCode) { //eslint-disable-line
         error = extendErrorWithResponseFields(errors.reviveRemoteError(body));
       }
       // if the caller prefers an error response above a certain status code, give it to them
