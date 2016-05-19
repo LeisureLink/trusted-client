@@ -148,7 +148,7 @@ describe('TrustedClient', function() {
         })
         .catch((err) => {
           expect(err.statusCode).to.equal(300);
-          expect(err.body).to.equal(JSON.stringify(defaultResponse));
+          expect(err.body).to.deep.equal(defaultResponse);
         });
     });
 
@@ -167,7 +167,7 @@ describe('TrustedClient', function() {
         })
         .catch((err) => {
           expect(err.statusCode).to.equal(300);
-          expect(err.body).to.equal(JSON.stringify(defaultResponse));
+          expect(err.body).to.deep.equal(defaultResponse);
         });
     });
 
