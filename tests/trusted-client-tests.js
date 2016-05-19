@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 import { expect } from 'chai';
+import { fail } from 'assert';
 import createServer, { uri, defaultResponse } from './echo-server';
 import { TrustedClient } from '../src';
 import domainCorrelation from '@leisurelink/domain-correlation';
@@ -103,6 +104,71 @@ describe('TrustedClient', function() {
         keyId: 'test',
         key: privateKey
       });
+    });
+
+    it('does not send body for GET when json is true', function() {
+      return client.request(uri, { method: 'GET', json: true })
+        .then(({ statusCode, body }) => {
+          expect(statusCode).to.equal(200);
+          expect(body).to.deep.equal(defaultResponse);
+        });
+    });
+
+    it('does send body for GET when told to', function() {
+      const requestBody = { thisis: 'dumb' };
+      return client.request(uri, { method: 'GET', json: requestBody })
+        .then(({ statusCode, body }) => {
+          expect(statusCode).to.equal(200);
+          expect(body).to.deep.equal(requestBody);
+        });
+    });
+
+    it('returns no error when statusCode is below client errorStatus', function() {
+      client = TrustedClient({
+        keyId: 'test',
+        key: privateKey,
+        errorStatus: 300
+      });
+      return client.request(uri, { method: 'GET', headers: { 'x-expected-status-code': 200 } })
+        .then(({ statusCode, body }) => {
+          expect(statusCode).to.equal(200);
+          expect(body).to.deep.equal(defaultResponse);
+        });
+    });
+
+    it('returns error when statusCode is above client errorStatus', function() {
+      client = TrustedClient({
+        keyId: 'test',
+        key: privateKey,
+        errorStatus: 300
+      });
+      return client.request(uri, { method: 'GET', headers: { 'x-expected-status-code': 300 } })
+        .then(() => {
+          fail('Expected error, got success');
+        })
+        .catch((err) => {
+          expect(err.statusCode).to.equal(300);
+          expect(err.body).to.equal(JSON.stringify(defaultResponse));
+        });
+    });
+
+    it('returns no error when statusCode is below request errorStatus', function() {
+      return client.request(uri, { method: 'GET', errorStatus: 300, headers: { 'x-expected-status-code': 200 } })
+        .then(({ statusCode, body }) => {
+          expect(statusCode).to.equal(200);
+          expect(body).to.deep.equal(defaultResponse);
+        });
+    });
+
+    it('returns error when statusCode is above request errorStatus', function() {
+      return client.request(uri, { method: 'GET', errorStatus: 300, headers: { 'x-expected-status-code': 300 } })
+        .then(() => {
+          fail('Expected error, got success');
+        })
+        .catch((err) => {
+          expect(err.statusCode).to.equal(300);
+          expect(err.body).to.equal(JSON.stringify(defaultResponse));
+        });
     });
 
     it('signs request', function() {
