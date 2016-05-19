@@ -40,7 +40,7 @@ const extendErrorWithResponseFields = (err, res, body) => {
     if (!err.statusCode) { // http-equiv-errors already sets this as a read-only property
       err.statusCode = res.statusCode;
     }
-    err.body = res.body;
+    err.body = body;
     err.raw = res;
   }
   return err;
