@@ -35,22 +35,25 @@ const handler = (req, res) => { //eslint-disable-line
     catch (e) {
     }
 
-    if (req.method === 'GET') {
-      res.writeHead(200);
-      res.end(JSON.stringify(defaultResponse));
-      return;
+    let status = 200;
+    let expectedStatus = parseInt(req.headers['x-expected-status-code'], 10);
+    if (expectedStatus >= 100 && expectedStatus < 600) {
+      status = expectedStatus;
     }
-    if (req.method === 'DELETE') {
-      res.writeHead(200);
-      res.end();
-      return;
-    }
-    res.writeHead(200);
+
+    res.writeHead(status);
+    let dataReceived = false;
     req.on('data', (message) => {
+      dataReceived = true;
       res.write(message);
     });
     req.on('end', () => {
-      res.end();
+      if (dataReceived || req.method === 'DELETE') {
+        res.end();
+      }
+      else {
+        res.end(JSON.stringify(defaultResponse));
+      }
     });
   } catch (err) {
     console.log(err);

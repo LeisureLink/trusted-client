@@ -35,6 +35,26 @@ function setRequestHeader(options, header, value) {
   options.headers[header] = value;
 }
 
+const extendErrorWithResponseFields = (err, res, body) => {
+  if (res) {
+    if (!err.statusCode) { // http-equiv-errors already sets this as a read-only property
+      err.statusCode = res.statusCode;
+    }
+    err.body = body;
+    err.raw = res;
+  }
+  return err;
+};
+
+class ResponseError extends Error {
+  constructor (res, body) {
+    super(res);
+    this.statusCode = res.statusCode;
+    this.raw = res;
+    this.body = body;
+  }
+}
+
 /**
  * Trusted Client
  * @public
@@ -51,10 +71,11 @@ function setRequestHeader(options, header, value) {
 export default function TrustedClient(options) {
   validate(options, trustedClientSchema);
 
-  let keyId = options.keyId;
-  let key = options.key;
-  let signedHeaders = options.signedHeaders || DefaultSignedHeaders;
-  let eventSink = new EventEmitter();
+  const keyId = options.keyId;
+  const key = options.key;
+  const errorStatus = options.errorStatus;
+  const signedHeaders = options.signedHeaders || DefaultSignedHeaders;
+  const eventSink = new EventEmitter();
   const logger = options.log || defaultLogger;
 
   const handleResponse = (deferred) => {
@@ -70,21 +91,14 @@ export default function TrustedClient(options) {
     };
   };
 
-  const formatError = (err, res) => {
-    if (res) {
-      if (!err.statusCode) { // http-equiv-errors already sets this as a read-only property
-        err.statusCode = res.statusCode;
-      }
-      err.body = res.body;
-      err.raw = res;
-    }
-    return err;
-  };
-
   const handleResponseWithMetrics = (uri, options, callback, deferred) => {
     const hrstart = process.hrtime();
-    return (err, res, body) => { // eslint-disable-line
+    return (responseError, res, responseBody) => { // eslint-disable-line
       const hrend = process.hrtime(hrstart);
+
+      let body = responseBody;
+      let error = responseError;
+
       const evt = {
         hrtime: hrend,
         timing: format('%ds %dms', hrend[0], hrend[1] / 1000000),
@@ -101,26 +115,28 @@ export default function TrustedClient(options) {
           body = obj;
         }
       }
-
-      let error = err;
-
-      // if the response is an error and json, revive the error to its object type...
-      if (typeof (body) === 'object' && res.statusCode > 299 && body.statusCode && res.statusCode == body.statusCode) { //eslint-disable-line
-        error = errors.reviveRemoteError(body);
-      }
-      // overwrite the corrected body...
       evt.response.body = body;
+
+      let minStatusForError = options.errorStatus || errorStatus;
+      // if the response is an error and json, revive the error to its object type...
+      if (typeof (body) === 'object' && res.statusCode >= 400 && body.statusCode && res.statusCode == body.statusCode) { //eslint-disable-line
+        error = extendErrorWithResponseFields(errors.reviveRemoteError(body), body);
+      }
+      // if the caller prefers an error response above a certain status code, give it to them
+      else if (minStatusForError && res.statusCode >= minStatusForError) {
+        error = new ResponseError(res, body);
+      }
       if (error) {
         if (error.code === 'ECONNREFUSED') {
-          error = new errors.ServiceUnavailableError(format('Could not connect to service: %s.', uri), error);
+          error = new errors.ServiceUnavailableError(`Could not connect to service at ${uri}`, error);
         }
         evt.response.error = error;
         eventSink.emit('time', evt);
         logger.debug(evt);
         if (callback) {
-          return callback(formatError(error, res));
+          return callback(error);
         }
-        return deferred.reject(formatError(error, res));
+        return deferred.reject(error);
       }
       eventSink.emit('time', evt);
       logger.debug(evt);
