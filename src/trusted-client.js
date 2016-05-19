@@ -35,7 +35,7 @@ function setRequestHeader(options, header, value) {
   options.headers[header] = value;
 }
 
-const extendErrorWithResponseFields = (err, res) => {
+const extendErrorWithResponseFields = (err, res, body) => {
   if (res) {
     if (!err.statusCode) { // http-equiv-errors already sets this as a read-only property
       err.statusCode = res.statusCode;
@@ -120,7 +120,7 @@ export default function TrustedClient(options) {
       let minStatusForError = options.errorStatus || errorStatus;
       // if the response is an error and json, revive the error to its object type...
       if (typeof (body) === 'object' && res.statusCode >= 400 && body.statusCode && res.statusCode == body.statusCode) { //eslint-disable-line
-        error = extendErrorWithResponseFields(errors.reviveRemoteError(body));
+        error = extendErrorWithResponseFields(errors.reviveRemoteError(body), body);
       }
       // if the caller prefers an error response above a certain status code, give it to them
       else if (minStatusForError && res.statusCode >= minStatusForError) {
