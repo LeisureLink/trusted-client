@@ -70,12 +70,12 @@ export default function TrustedClient(options) {
     };
   };
 
-  const formatError = (err, res) => {
+  const formatError = (err, res, body) => {
     if (res) {
       if (!err.statusCode) { // http-equiv-errors already sets this as a read-only property
         err.statusCode = res.statusCode;
       }
-      err.body = res.body;
+      err.body = body;
       err.raw = res;
     }
     return err;
@@ -118,9 +118,9 @@ export default function TrustedClient(options) {
         eventSink.emit('time', evt);
         logger.debug(evt);
         if (callback) {
-          return callback(formatError(error, res));
+          return callback(formatError(error, res, body));
         }
-        return deferred.reject(formatError(error, res));
+        return deferred.reject(formatError(error, res, body));
       }
       eventSink.emit('time', evt);
       logger.debug(evt);
