@@ -1,5 +1,5 @@
 import { createServer } from 'http';
-import { parseRequest as parseSignature } from '@leisurelink/http-signature';
+import { parseRequest as parseSignature } from 'http-signature';
 import trusted from '../src';
 import Logger from '@leisurelink/skinny-loggins';
 
