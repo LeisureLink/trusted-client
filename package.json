@@ -43,10 +43,10 @@
   "dependencies": {
     "@leisurelink/domain-correlation": "^1.1",
     "@leisurelink/http-equiv-errors": "^0.1.5",
-    "@leisurelink/http-signature": "^1.1.1",
     "@leisurelink/skinny-event-loggins": "^1.0.0",
     "bluebird": "^3.3.5",
     "deep-extend": "^0.4.1",
+    "http-signature": "^1.1.1",
     "joi": "^8.1.0",
     "jsonwebtoken": "~6.2.0",
     "lodash": "^4.12.0",

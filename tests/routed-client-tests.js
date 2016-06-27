@@ -46,19 +46,6 @@ describe('RoutedClient', function() {
     });
   });
 
-  describe('deprecated functionality', function(){
-    it('should be constructable', function(){
-      let client = new AbstractClient(uri, trustedClient, routeDefinitions);
-      return client.get('root')
-        .then(({ statusCode, raw, body }) => {
-          expect(statusCode).to.equal(200);
-          expect(raw.headers['x-requested-url']).to.equal('/');
-          expect(body).to.deep.equal(defaultResponse);
-        });
-    });
-
-  });
-
   describe('#get', function(){
     let client;
     before(function(){

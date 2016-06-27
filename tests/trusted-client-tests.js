@@ -43,10 +43,10 @@ describe('TrustedClient', function() {
     });
   });
 
-  describe('deprecated functionality', function() {
+  describe('callback model', function() {
     let client;
     before(function(){
-      client = new TrustedClient({
+      client = TrustedClient({
         keyId: 'test',
         key: privateKey
       });
@@ -79,21 +79,6 @@ describe('TrustedClient', function() {
         }
       );
     });
-
-    it('can bind to a jwt token with bindToken', function(done) {
-      client.bindToken(sampleToken).request(uri, { method: 'GET' },
-        function(err, res) {
-          if (err) {
-            done(err);
-          }
-          expect(res.statusCode).to.equal(200);
-          let signature = JSON.parse(res.headers['x-parsed-signature']);
-
-          expect(signature.params.jwt).to.eql(sampleToken);
-          done();
-        }
-      );
-    });
   });
 
   describe('#request', function() {
@@ -116,15 +101,42 @@ describe('TrustedClient', function() {
         });
     });
 
-    it('signs request with jwt', function() {
-      return client.withToken(sampleToken).request(uri, { method: 'GET' })
-        .then(({ statusCode, raw }) => {
-          expect(statusCode).to.equal(200);
+    describe('passes user token', function() {
+      it('withUser call', function() {
+        return client.withUser(sampleToken).request(uri, { method: 'GET' })
+          .then(({ statusCode, raw }) => {
+            expect(statusCode).to.equal(200);
 
-          let signature = JSON.parse(raw.headers['x-parsed-signature']);
+            expect(raw.headers['x-authentic-user']).to.eql(sampleToken);
+          });
+      });
+      it('via options', function() {
+        return client.request(uri, { method: 'GET', user: sampleToken })
+          .then(({ statusCode, raw }) => {
+            expect(statusCode).to.equal(200);
 
-          expect(signature.params.jwt).to.eql(sampleToken);
-        });
+            expect(raw.headers['x-authentic-user']).to.eql(sampleToken);
+          });
+      });
+    });
+
+    describe('passes origin token', function() {
+      it('withOrigin call', function() {
+        return client.withOrigin(sampleToken).request(uri, { method: 'GET' })
+          .then(({ statusCode, raw }) => {
+            expect(statusCode).to.equal(200);
+
+            expect(raw.headers['x-authentic-origin']).to.eql(sampleToken);
+          });
+      });
+      it('via options', function() {
+        return client.request(uri, { method: 'GET', origin: sampleToken })
+          .then(({ statusCode, raw }) => {
+            expect(statusCode).to.equal(200);
+
+            expect(raw.headers['x-authentic-origin']).to.eql(sampleToken);
+          });
+      });
     });
 
     it('sends a correlation id', function(done) {
@@ -134,7 +146,7 @@ describe('TrustedClient', function() {
           client.request(uri, { method: 'GET' })
             .then(function({ statusCode, raw }) {
               expect(statusCode).to.equal(200);
-              expect(raw.headers['x-received-correlation-id']).to.equal(correlationId);
+              expect(raw.headers['x-correlation-id']).to.equal(correlationId);
               done();
             }
           );

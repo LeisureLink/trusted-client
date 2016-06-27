@@ -47,8 +47,12 @@ export default function RoutedClient(baseUrl, trustedClient, routeDefinitions){
     return trustedClient.request(getUrl(routeName, params), requestOptions, callback);
   };
 
-  const withToken = (token) => {
-    return RoutedClient(baseUrl, trustedClient.withToken(token), routeDefinitions);
+  const withUser = (token) => {
+    return RoutedClient(baseUrl, trustedClient.withUser(token), routeDefinitions);
+  };
+
+  const withOrigin = (token) => {
+    return RoutedClient(baseUrl, trustedClient.withOriginating(token), routeDefinitions);
   };
 
   const module = {
@@ -116,7 +120,8 @@ export default function RoutedClient(baseUrl, trustedClient, routeDefinitions){
     },
     requestWithBody,
     requestWithoutBody,
-    withToken,
+    withUser,
+    withOrigin,
     on: trustedClient.on,
     once: trustedClient.once,
     getUrl: getUrl
