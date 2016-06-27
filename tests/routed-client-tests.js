@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import { expect } from 'chai';
 import createServer, { uri, defaultResponse } from './echo-server';
-import { TrustedClient, RoutedClient, AbstractClient } from '../src';
+import { TrustedClient, RoutedClient } from '../src';
 
 const privateKeyFile = path.normalize(process.env.HTTP_SIGNATURE_PEM || path.join(__dirname, './test-key.pem'));
 const privateKey = readFileSync(privateKeyFile);
