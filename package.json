@@ -1,6 +1,6 @@
 {
   "name": "@leisurelink/trusted-client",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "Nodejs module implementing trusted client over http requests.",
   "main": "build/index.js",
   "scripts": {
