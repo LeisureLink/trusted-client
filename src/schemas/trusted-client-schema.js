@@ -9,6 +9,10 @@ export default joi.object({
     .description('The private key for the api. This is for signing requests.')
     .example('-----BEGIN RSA PRIVATE KEY-----\naabbcc\n-----END RSA PRIVATE KEY-----\n')
     .required(),
+  user: joi.string()
+    .description('The user JWT for requests to be made by this client'),
+  origin: joi.string()
+    .description('The originating endpoint JWT for requests to be made by this client'),
   log: joi.object()
     .keys({
       error: joi.func().required(),

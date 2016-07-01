@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import { expect } from 'chai';
 import createServer, { uri, defaultResponse } from './echo-server';
-import { TrustedClient, RoutedClient, AbstractClient } from '../src';
+import { TrustedClient, RoutedClient } from '../src';
 
 const privateKeyFile = path.normalize(process.env.HTTP_SIGNATURE_PEM || path.join(__dirname, './test-key.pem'));
 const privateKey = readFileSync(privateKeyFile);
@@ -44,19 +44,6 @@ describe('RoutedClient', function() {
     it('should work when valid params are given', function(){
       expect(()=>RoutedClient(uri, trustedClient, routeDefinitions)).to.not.throw();
     });
-  });
-
-  describe('deprecated functionality', function(){
-    it('should be constructable', function(){
-      let client = new AbstractClient(uri, trustedClient, routeDefinitions);
-      return client.get('root')
-        .then(({ statusCode, raw, body }) => {
-          expect(statusCode).to.equal(200);
-          expect(raw.headers['x-requested-url']).to.equal('/');
-          expect(body).to.deep.equal(defaultResponse);
-        });
-    });
-
   });
 
   describe('#get', function(){

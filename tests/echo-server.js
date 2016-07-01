@@ -1,5 +1,5 @@
 import { createServer } from 'http';
-import { parseRequest as parseSignature } from '@leisurelink/http-signature';
+import { parseRequest as parseSignature } from 'http-signature';
 import trusted from '../src';
 import Logger from '@leisurelink/skinny-loggins';
 
@@ -19,15 +19,21 @@ export const defaultResponse = { hi: 'there' };
 export const port = process.env.TEST_PORT || 8888;
 export const uri = `http://localhost:${port}`;
 
+const echoHeader = (req, res, header) => {
+  let val = req.headers[header];
+  if (val) {
+    res.setHeader(header, val);
+  }
+};
+
 const handler = (req, res) => { //eslint-disable-line
   try {
     res.setHeader('x-requested-url', req.url);
     res.setHeader('Content-Type', 'application/json');
 
-    let correlationId = req.headers['x-correlation-id'];
-    if (correlationId) {
-      res.setHeader('x-received-correlation-id', correlationId);
-    }
+    echoHeader(req, res, 'x-correlation-id');
+    echoHeader(req, res, 'x-authentic-user');
+    echoHeader(req, res, 'x-authentic-origin');
 
     try {
       res.setHeader('x-parsed-signature', JSON.stringify(parseSignature(req)));

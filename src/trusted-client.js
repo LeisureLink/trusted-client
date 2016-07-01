@@ -1,20 +1,19 @@
 import { format } from 'util';
 import extend from 'deep-extend';
-import request from './monkey-patch-request';
+import request from 'request';
 import errors from '@leisurelink/http-equiv-errors';
 import { trustedClient as trustedClientSchema, validate, requiredObject, requiredString, optionalFunc } from './schemas';
 import { EventEmitter } from 'events';
 import domainCorrelation from '@leisurelink/domain-correlation';
-import TrustedUser from './trusted-user';
 import defaultLogger from './logger';
 import DeferredPromise from './deferred-promise';
 
 export const DefaultSignedHeaders = {
-  PATCH: ['host', 'date', 'request-line', 'content-length'],
-  POST: ['host', 'date', 'request-line', 'content-length'],
-  PUT: ['host', 'date', 'request-line', 'content-length'],
-  GET: ['host', 'date', 'request-line'],
-  DELETE: ['host', 'date', 'request-line']
+  PATCH: ['host', 'date', '(request-target)', 'content-length'],
+  POST: ['host', 'date', '(request-target)', 'content-length'],
+  PUT: ['host', 'date', '(request-target)', 'content-length'],
+  GET: ['host', 'date', '(request-target)'],
+  DELETE: ['host', 'date', '(request-target)']
 };
 
 function isJson(headers) {
@@ -56,6 +55,8 @@ export default function TrustedClient(options) {
   let signedHeaders = options.signedHeaders || DefaultSignedHeaders;
   let eventSink = new EventEmitter();
   const logger = options.log || defaultLogger;
+  let boundUser = options.user;
+  let boundOrigin = options.origin;
 
   const handleResponse = (deferred) => {
     return (err, res, body) => {
@@ -150,6 +151,18 @@ export default function TrustedClient(options) {
     if (!options.headers || !options.headers.accept) {
       setRequestHeader(options, 'accept', 'application/json, text/plain;q=0.9, text/html;q=0.8');
     }
+    if (boundUser || options.user) {
+      setRequestHeader(options, 'X-Authentic-User', boundUser || options.user);
+      if (options.user) {
+        delete options.user;
+      }
+    }
+    if (boundOrigin || options.origin) {
+      setRequestHeader(options, 'X-Authentic-Origin', boundOrigin || options.origin);
+      if (options.origin) {
+        delete options.origin;
+      }
+    }
 
     // Ensure the request bears an http signature; replaces existing
     // options.httpSignature if the caller specified one.
@@ -163,9 +176,6 @@ export default function TrustedClient(options) {
       delete options.json;
       setRequestHeader(options, 'content-type', 'application/json');
       setRequestHeader(options, 'content-length', Buffer.byteLength(options.body));
-    }
-    if (options.jwt) {
-      sig.jwt = options.jwt;
     }
     options = extend({
       httpSignature: sig
@@ -189,15 +199,24 @@ export default function TrustedClient(options) {
     return deferred.promise;
   };
 
-  const withToken = (token) => {
+  const withUser = (token) => {
     validate(token, requiredString('token'));
-    return TrustedUser(makeRequest, token);
+    let opts = extend(options);
+    opts.user = token;
+    return TrustedClient(opts);
+  };
+
+  const withOrigin = (token) => {
+    validate(token, requiredString('token'));
+    let opts = extend(options);
+    opts.origin = token;
+    return TrustedClient(opts);
   };
 
   let module = {
     request: makeRequest,
-    bindToken: withToken,
-    withToken,
+    withOrigin,
+    withUser,
     on: (event, handler) => {
       eventSink.on(event, handler);
     },
@@ -205,11 +224,6 @@ export default function TrustedClient(options) {
       eventSink.once(event, handler);
     }
   };
-
-  // deprecated
-  if (this) {
-    logger.warn('Deprecated - trusted client should not be called with "new"');
-  }
 
   return module;
 };
