@@ -22,7 +22,11 @@ function isJson(headers) {
 
 function forceJson(headers, body) {
   if (body && typeof (body) === 'string' && isJson(headers)) {
-    return JSON.parse(body);
+    try{
+      body = JSON.parse(body);
+    } catch(err){
+      body = undefined;
+    }
   }
   return body;
 }
