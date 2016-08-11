@@ -1,5 +1,5 @@
 import { format } from 'util';
-import extend from 'deep-extend';
+import _ from 'lodash';
 import request from 'request';
 import errors from '@leisurelink/http-equiv-errors';
 import { trustedClient as trustedClientSchema, validate, requiredObject, requiredString, optionalFunc } from './schemas';
@@ -181,7 +181,7 @@ export default function TrustedClient(options) {
       setRequestHeader(options, 'content-type', 'application/json');
       setRequestHeader(options, 'content-length', Buffer.byteLength(options.body));
     }
-    options = extend({
+    options = _.defaultsDeep({
       httpSignature: sig
     }, options);
 
@@ -205,15 +205,29 @@ export default function TrustedClient(options) {
 
   const withUser = (token) => {
     validate(token, requiredString('token'));
-    let opts = extend(options);
+    let opts = _.defaultsDeep(options);
     opts.user = token;
     return TrustedClient(opts);
   };
 
   const withOrigin = (token) => {
     validate(token, requiredString('token'));
-    let opts = extend(options);
+    let opts = _.defaultsDeep(options);
     opts.origin = token;
+    return TrustedClient(opts);
+  };
+
+  const withAuth = (auth) => { //eslint-disable-line complexity
+    let creds = auth.credentials || auth || {};
+    let opts = _.defaultsDeep({}, options);
+    if (creds.origin && creds.origin['_token']) {
+      opts.origin = creds.origin['_token'];
+    } else if (creds.endpoint && creds.endpoint['_token']) {
+      opts.origin = creds.endpoint['_token'];
+    }
+    if (creds.user && creds.user['_token']) {
+      opts.user = creds.user['_token'];
+    }
     return TrustedClient(opts);
   };
 
@@ -221,6 +235,7 @@ export default function TrustedClient(options) {
     request: makeRequest,
     withOrigin,
     withUser,
+    withAuth,
     on: (event, handler) => {
       eventSink.on(event, handler);
     },
