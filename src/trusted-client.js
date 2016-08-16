@@ -78,10 +78,23 @@ export default function TrustedClient(options) {
   const formatError = (err, res, body) => {
     if (res) {
       if (!err.statusCode) { // http-equiv-errors already sets this as a read-only property
-        err.statusCode = res.statusCode;
+        Object.defineProperties(err, {
+          statusCode: {
+            value: res.statusCode,
+            enumerable: true
+          }
+        });
       }
-      err.body = body;
-      err.raw = res;
+      Object.defineProperties(err, {
+        body: {
+          value: body,
+          enumerable: false
+        },
+        raw: {
+          value: res,
+          enumerable: false,
+        }
+      });
     }
     return err;
   };
