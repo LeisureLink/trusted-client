@@ -121,7 +121,6 @@ export default function TrustedClient(options) {
       }
 
       let error = err;
-
       // if the response is an error and json, revive the error to its object type...
       if (typeof (body) === 'object' && res.statusCode > 299 && body.statusCode && res.statusCode == body.statusCode) { //eslint-disable-line
         error = errors.reviveRemoteError(body);
@@ -209,11 +208,28 @@ export default function TrustedClient(options) {
       handler = handleResponse(deferred);
     }
 
-    request(options, handler);
+    const reqStream = request(options);
+
+    let data = '';
+    reqStream.on('data', chunk => {
+      data += chunk;
+    });
+    reqStream.on('end', () => {
+      try {
+        data = JSON.parse(data);
+      } catch(e) {}
+      handler(null, reqStream, data);
+    });
+    reqStream.on('error', (err) => {
+      logger.debug('there was an error in the response stream: ', err);
+      handler(err);
+    });
+    reqStream.then = (fn) => deferred.promise.then(fn);
+    reqStream.catch = (fn) => deferred.promise.catch(fn);
     if (callback) {
       return undefined;
     }
-    return deferred.promise;
+    return reqStream;
   };
 
   const withUser = (token) => {
