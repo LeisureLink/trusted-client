@@ -215,10 +215,7 @@ export default function TrustedClient(options) {
       data += chunk;
     });
     reqStream.on('end', () => {
-      try {
-        data = JSON.parse(data);
-      } catch(e) {}
-      handler(null, reqStream, data);
+      handler(null, reqStream.response, data);
     });
     reqStream.on('error', (err) => {
       logger.debug('there was an error in the response stream: ', err);
